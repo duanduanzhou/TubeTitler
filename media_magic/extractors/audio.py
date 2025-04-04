@@ -10,18 +10,17 @@ import yt_dlp
 logger = logging.getLogger(__name__)
 
 def download_audio(video_id: str) -> Optional[str]:
-    # Download audio from YouTube video and return path to audio file
+    # Download audio and return path to audio file
     
     if not video_id:
         logger.error("Invalid video ID provided")
         return None
     
     try:
-        # Create temp directory for downloads if it doesn't exist
+        # Create temp directory for downloads
         temp_dir = os.path.join(tempfile.gettempdir(), "tubetitler_audio")
         os.makedirs(temp_dir, exist_ok=True)
         
-        # Set output file path
         output_file = os.path.join(temp_dir, f"{video_id}.mp3")
         
         # Check if file already exists

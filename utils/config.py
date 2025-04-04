@@ -14,7 +14,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class Config:
-    # Configuration manager for TubeTitler
     
     _instance = None
     
@@ -26,7 +25,7 @@ class Config:
         return cls._instance
     
     def _load_config(self, config_path=None):
-        # Load configuration from YAML 
+        # Load configuration from YAML
         if config_path is None:
             root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             config_path = os.path.join(root_dir, "config.yaml")
@@ -41,7 +40,6 @@ class Config:
             self.config = self._get_default_config()
     
     def _get_default_config(self) -> Dict[str, Any]:
-        # Get default configuration values
         return {
             "api_keys": {
                 "youtube": None
@@ -81,7 +79,7 @@ class Config:
         }
     
     def get(self, key_path: str, default: Any = None) -> Any:
-        # Get a config value using
+        # Get a config value
         keys = key_path.split('.')
         value = self.config
         
@@ -94,8 +92,10 @@ class Config:
         return value
     
     def get_path(self, path_key: str) -> str:
-        # Get a filesystem path from config
+        # Get a filesystem path from configuration
         path = self.get(f"paths.{path_key}")
+        
+        # If not found, use default paths
         if path is None:
             root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             defaults = {
@@ -112,26 +112,28 @@ class Config:
                 logger.warning(f"Unknown path key: {path_key}, using as-is")
                 path = path_key
         
-        # Create directory 
+        # Create directory if it doesn't exist
         if os.path.dirname(path) and not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path), exist_ok=True)
         
         return path
     
     def set(self, key_path: str, value: Any):
-        # Set a configuration value 
+        """Set a configuration value using dot notation"""
         keys = key_path.split('.')
         config_ref = self.config
         
-        # Navigate to innermost dict
+        # Navigate to the innermost dict
         for key in keys[:-1]:
             if key not in config_ref:
                 config_ref[key] = {}
             config_ref = config_ref[key]
+        
+        # Set the value
         config_ref[keys[-1]] = value
     
     def save(self, config_path: Optional[str] = None):
-        # Save configuration to YAML
+        """Save configuration to a YAML file"""
         if config_path is None:
             root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             config_path = os.path.join(root_dir, "config.yaml")
@@ -144,4 +146,5 @@ class Config:
             logger.error(f"Error saving configuration to {config_path}: {str(e)}")
 
 def get_config(config_path: Optional[str] = None) -> Config:
+    # Get configuration singleton instance
     return Config(config_path) 

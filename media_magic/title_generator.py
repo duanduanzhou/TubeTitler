@@ -41,7 +41,6 @@ def process_youtube_video(
 ) -> Dict[str, Any]:
     # Process a YouTube video and generate engaging titles
     # Returns a dictionary with results or error information
-    
     try:
         logger.info(f"Processing video: {video_url}")
         result = {"success": False, "titles": [], "video_info": {}}

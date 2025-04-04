@@ -22,7 +22,6 @@ def download_thumbnail(video_id: str) -> Optional[str]:
         temp_dir = os.path.join(tempfile.gettempdir(), "tubetitler_thumbnails")
         os.makedirs(temp_dir, exist_ok=True)
         
-        # Set output file path
         output_file = os.path.join(temp_dir, f"{video_id}.jpg")
         
         # Check if file already exists
@@ -71,7 +70,7 @@ def download_thumbnail(video_id: str) -> Optional[str]:
             logger.warning(f"Error getting thumbnail URL from video info: {str(e)}")
             logger.info("Trying standard YouTube thumbnail URLs...")
             
-            # Try different resolutions in order of preference
+            # Try different resolutions
             resolutions = ["maxresdefault", "sddefault", "hqdefault", "mqdefault", "default"]
             
             for resolution in resolutions:
@@ -79,7 +78,7 @@ def download_thumbnail(video_id: str) -> Optional[str]:
                     thumbnail_url = f"https://i.ytimg.com/vi/{video_id}/{resolution}.jpg"
                     response = requests.get(thumbnail_url, timeout=10)
                     
-                    # If request was successful, save the image
+                    # If request successful, save the image
                     if response.status_code == 200:
                         with open(output_file, 'wb') as f:
                             f.write(response.content)

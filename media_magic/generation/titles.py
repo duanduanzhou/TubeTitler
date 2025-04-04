@@ -2,18 +2,14 @@
 
 import os
 import logging
-import torch
 import numpy as np
 from typing import List, Dict, Any
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 
-# Configure logging
 logger = logging.getLogger(__name__)
-
-# Path to trained model
 MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "trained_model")
 
-# Initialize model and tokenizer (lazy-loaded)
+# Initialize model and tokenizer
 _model = None
 _tokenizer = None
 
@@ -34,18 +30,15 @@ def load_model():
     return _model, _tokenizer
 
 def extract_visual_concepts(clip_embedding, top_k=5):
-    """Extract visual concepts from CLIP embedding (simplified version)."""
+    # Extract visual concepts from CLIP embedding
+    # Simplified
     try:
-        # This is a simplified version that doesn't actually match against concepts
-        # In a full implementation, you would compare with a set of concept embeddings
-        
-        # For now, return some generic visual concepts to use as prompts
         concepts = [
             "person", "music", "colorful", "dynamic", "emotional",
             "artistic", "vibrant", "energetic", "professional", "creative"
         ]
-        
-        # Randomly select some concepts (would normally be based on embedding similarity)
+      
+        # Randomly select concepts
         import random
         selected_concepts = random.sample(concepts, min(top_k, len(concepts)))
         return selected_concepts
@@ -60,15 +53,10 @@ def generate_enhanced_title(
     num_titles: int = 3,
     creativity: float = 0.7,
     title_length: float = 0.5
-) -> List[str]:
-    """Generate engaging YouTube titles using trained multimodal model."""
-    
+) -> List[str]:    
     try:
-        # Load the model and tokenizer
         model, tokenizer = load_model()
-        
-        # Prepare transcript (truncate if too long)
-        max_chars = 6000  # Limit transcript length to avoid token limits
+        max_chars = 6000
         truncated_transcript = transcript[:max_chars] + ("..." if len(transcript) > max_chars else "")
         
         # Adjust temperature based on creativity
@@ -77,9 +65,8 @@ def generate_enhanced_title(
         # Format prompt
         prompt = f"Channel: {channel_name}\nTranscript: {truncated_transcript}"
         
-        # Add clip embedding info (our model was trained with this format)
+        # Add clip embedding info
         if clip_embedding and len(clip_embedding) > 0:
-            # Just a signal that we have visual info, we don't need to include the actual embeddings
             prompt += "\nHas thumbnail: yes"
         else:
             prompt += "\nHas thumbnail: no"
@@ -90,7 +77,7 @@ def generate_enhanced_title(
         # Generate titles
         logger.info(f"Generating {num_titles} titles with temperature={temperature}")
         
-        # Set decoder start token ID to the pad token (following T5 convention)
+        # Set decoder start token ID to the pad token (T5 convention)
         decoder_start_token_id = model.config.decoder_start_token_id
         if decoder_start_token_id is None:
             decoder_start_token_id = tokenizer.pad_token_id
@@ -113,7 +100,7 @@ def generate_enhanced_title(
         # Clean up titles if needed
         clean_titles = []
         for title in titles:
-            # Remove any common prefixes like "Title: " if present
+            # Remove common prefixes
             if ":" in title and title.split(":")[0].strip().lower() in ["title", "youtube title"]:
                 clean_title = ":".join(title.split(":")[1:]).strip()
             else:
@@ -134,13 +121,11 @@ def generate_enhanced_title(
         return generate_fallback_titles(transcript, channel_name, num_titles)
 
 def generate_fallback_titles(transcript: str, channel_name: str, num_titles: int = 3) -> List[str]:
-    """Generate simple titles from transcript when model generation fails"""
     logger.info("Using fallback title generation")
-    
-    # Get first few sentences (up to 200 chars)
+    # Get first few sentences up to 200 chars
     first_part = transcript[:200]
     
-    # Extract potential key phrases using simple regex
+    # Extract potential key phrases
     import re
     sentences = re.split(r'[.!?]', first_part)
     sentences = [s.strip() for s in sentences if s.strip()]
@@ -159,20 +144,20 @@ def generate_fallback_titles(transcript: str, channel_name: str, num_titles: int
     
     titles = []
     
-    # First title: use first sentence if it's not too long
+    # 1st title: use first sentence if not too long
     first_sentence = sentences[0]
     if len(first_sentence) > 50:
         first_sentence = first_sentence[:47] + "..."
     titles.append(first_sentence)
     
-    # Second title: combine channel name with first sentence fragment
+    # 2nd title: combine channel name with first sentence fragment
     if len(channel_name) + len(first_sentence) > 45:
         fragment = first_sentence[:40-len(channel_name)] + "..."
         titles.append(f"{channel_name}: {fragment}")
     else:
         titles.append(f"{channel_name}: {first_sentence}")
     
-    # Additional titles: use templates
+    # Additional: use templates
     import random
     while len(titles) < num_titles:
         if sentences:
