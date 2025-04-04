@@ -1,0 +1,11 @@
+yt-dlp>=2023.3.4
+numpy>=1.22.0
+Pillow>=9.0.0
+torch>=2.0.0
+clip-interrogator>=0.6.0
+whisper>=1.0.0
+openai-whisper>=20230314
+transformers>=4.29.0
+tqdm>=4.64.1
+requests>=2.28.0
+python-dotenv>=1.0.0

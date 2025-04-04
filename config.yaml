@@ -1,0 +1,56 @@
+# TubeTitler Configuration
+
+# API settings (optional)
+youtube_api:
+  api_key: ""  # YouTube API key 
+  quota_limit: 10000
+  fetch_limit: 50
+
+# Paths
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  thumbnails: "data/raw/thumbnails"
+  frames: "data/raw/frames"
+  transcripts: "data/raw/transcripts"
+  embeddings: "data/processed/embeddings"
+
+# Models
+models:
+  whisper:
+    model_size: "medium"  # tiny, base, small, medium, large
+    language: "en"
+  clip:
+    model_name: "ViT-L/14"
+  
+# Processing
+processing:
+  max_frames_per_video: 3
+  batch_size: 8
+  clip_dim: 768
+  fusion_dim: 512
+
+# Title generation
+title_generation:
+  model_name: "t5-base"
+  max_length: 50
+  num_return_sequences: 3
+  do_sample: true
+  temperature: 0.7
+  top_p: 0.9
+
+# Categories
+categories:
+  - "20"  # Gaming
+  - "22"  # People & Blogs
+  - "23"  # Comedy
+  - "24"  # Entertainment
+  - "26"  # Howto & Style
+  - "27"  # Education
+  - "28"  # Science & Technology
+
+# Filters
+filters:
+  min_duration: 60
+  max_duration: 1200
+  min_views: 10000

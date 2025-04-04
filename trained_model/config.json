@@ -1,0 +1,8 @@
+{
+  "clip_dim": 512,
+  "fusion_dim": 256,
+  "model_type": "t5",
+  "base_model": "t5-base",
+  "best_epoch": 2,
+  "best_val_loss": 13.58935260772705
+}

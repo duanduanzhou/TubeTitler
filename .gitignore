@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.env
+.venv
+env/
+venv/
+ENV/
+data/
+models/checkpoints/title_generator/*.bin
+models/checkpoints/title_generator/*.pt
+.env
